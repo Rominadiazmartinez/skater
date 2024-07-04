@@ -1,0 +1,80 @@
+<div class="py-4">
+      <h2>Administración</h2>
+      <hr class="w-50" />
+        {{#if allSkaters}}
+        {{>tablaAdmin allSkaters = allSkaters}}
+        {{else}}
+        <h1>No hay skaters para mostrar</h1>
+    {{/if}}
+    </div>
+
+<script>
+
+  let tbody = document.getElementById("tbody");
+  
+  tbody.addEventListener("click", async(e) =>{
+    let elemento = e.target
+    if(elemento.classList.contains("checkbox")){
+        let id = elemento.dataset.id
+        if(elemento.checked){
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            const raw = JSON.stringify({
+            "estado": true     
+            });
+
+            const requestOptions = {
+            method: "PUT",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+            };
+
+            let response = await fetch(`/api/v1/skaters/updateEstado/${id}`, requestOptions)
+            let data = await response.json()
+
+            if(data.code == 201){
+                alert("Se Ha Cambiado EL Estado Del Skater A Aprobado")
+                
+            }else{
+                alert(data.message)
+            }
+        }else{
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+
+            const raw = JSON.stringify({
+            "estado": false     
+            });
+
+            const requestOptions = {
+            method: "PUT",
+            headers: myHeaders,
+            body: raw,
+            redirect: "follow"
+            };
+
+            let response = await fetch(`/api/v1/skaters/updateEstado/${id}`, requestOptions)
+            let data = await response.json()
+
+            if(data.code == 201){
+                alert("Se Ha Cambiado EL Estado Del Skater A En Revisión")
+                
+            }else{
+                alert(data.message)
+            }
+        }
+    }
+  })
+
+  /*checkbox.addEventListener('change', function(event) {
+    if (event.target.checked) {
+        console.log('Checkbox marcado');
+    } else {
+        console.log('Checkbox desmarcado');
+    }
+});*/
+
+</script>
+      

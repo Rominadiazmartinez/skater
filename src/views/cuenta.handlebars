@@ -1,0 +1,141 @@
+<h1>Skate Park</h1>
+
+    <div class="py-4">
+      <h2>Datos del perfil</h2>
+      <hr class="w-50" />
+
+      <form id="update">
+        <div class="form-group row w-50 m-auto">
+          <div class="form-group col-12 col-sm-6">
+            <label>Email</label>
+            <input
+              class="form-control m-auto"
+              disabled
+              id="email"
+              name="email"
+            />
+          </div>
+          <div class="form-group col-12 col-sm-6">
+            <label>Nombre</label>
+            <input class="form-control m-auto" id="nombre" name="nombre"/>
+          </div>
+          <div class="form-group col-12 col-sm-6">
+            <label>Password</label>
+            <input
+              type="password"
+              class="form-control m-auto"
+              id="password"
+              name="password"
+            />
+          </div>
+          <div class="form-group col-12 col-sm-6">
+            <label>Repita la password</label>
+            <input
+              type="password"
+              class="form-control m-auto"
+              id="repeatPassword"
+              name="repeatPassword"
+            />
+          </div>
+          <div class="form-group col-12 col-sm-6">
+            <label>Años de experiencia</label>
+            <input class="form-control m-auto"  id="experiencia" name="experiencia"/>
+          </div>
+          <div class="form-group col-12 col-sm-6">
+            <label>Especialidad</label>
+            <input class="form-control m-auto"  id="especialidad" name="especialidad"/>
+          </div>
+        </div>
+        <div class="mb-1">
+          <button class="btn btn-primary">Actualizar</button>
+        </div>
+      </form>
+
+        <div>
+          <button class="btn btn-danger" id="eliminar">Eliminar cuenta</button>
+        </div>
+    </div>
+
+<script>   
+
+      let email = document.getElementById("email")
+      let nombre = document.getElementById("nombre")
+      let password = document.getElementById("password") 
+      let repeatPassword = document.getElementById("repeatPassword")
+      let experiencia = document.getElementById("experiencia")
+      let especialidad = document.getElementById("especialidad")
+
+      let usuario = localStorage.getItem("usuario")
+      let usuarioParse = JSON.parse(usuario)
+      let id = usuarioParse.id
+
+      document.addEventListener('DOMContentLoaded', async() =>{
+
+      
+      let response = await fetch(`/api/v1/skaters/buscar/${id}`)
+      let data = await response.json()
+
+      email.value = data.data.email
+      nombre.value = data.data.nombre
+      password.value = data.data.password
+      repeatPassword.value = data.data.password
+      experiencia.value = data.data.anos_experiencia
+      especialidad.value = data.data.especialidad
+});
+
+    let formulario = document.getElementById("update")
+
+    formulario.addEventListener("submit", async(e) =>{
+      e.preventDefault()
+      if(password.value == repeatPassword.value){
+          const myHeaders = new Headers();
+          myHeaders.append("Content-Type", "application/json");
+
+          const raw = JSON.stringify({
+          "email": email.value,
+           "nombre": nombre.value,
+          "password": password.value,
+          "experiencia": experiencia.value,
+          "especialidad": especialidad.value        
+          });
+
+          const requestOptions = {
+          method: "PUT",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow"
+          };
+
+          let response = await fetch("/api/v1/skaters/update", requestOptions)
+          let data = await response.json()
+
+          if(data.code == 201){
+              alert(data.message)
+              location.href = `/`
+          }else{
+              alert(data.message)
+          }
+
+      }else{
+        alert("La contraseña no coinciden")
+      }
+    })
+
+    let boton = document.getElementById("eliminar")
+
+    boton.addEventListener("click", async() =>{
+      let confirmacion = confirm("Estás seguro de que deseas eliminar este usuario?")
+      if(confirmacion){
+        let response = await fetch(`/api/v1/skaters/delete/${id}`, {"method":"delete"})
+        let data = await response.json()
+        if(data.code == 200){
+          alert(data.message)
+          location.href = "/"
+          localStorage.clear()
+        }else{
+          alert(data.message)
+        }
+
+      }
+    })
+</script>

@@ -1,0 +1,17 @@
+<h1>Skate Park</h1>
+
+<div class="py-4">
+      <h2>Lista de participantes</h2>
+
+      <hr />
+
+    {{#if allSkaters}}
+        {{>tablaHome allSkaters = allSkaters}}
+        {{else}}
+        <h1>No hay skaters para mostrar</h1>
+    {{/if}}
+
+    <a href="/login">Iniciar Sesión</a> |
+    <a href="/register">Registrarme</a>
+
+</div>
